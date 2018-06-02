@@ -18,9 +18,9 @@ tic % start timer
 %       DT          - the delaunayTriangulation
 %
 % File: EdgeInit.mat
-% Data: K      - 
-%       N      - 
-%       Points - 
+% Data: K -
+%       N - 
+
 %       
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear % Clear previous data
