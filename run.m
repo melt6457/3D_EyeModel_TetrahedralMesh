@@ -163,5 +163,5 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Save Positions to a File
-save('Positions.mat', 'P', 'numSteps', 'Fmag');
+save('Data/ositions.mat', 'P', 'numSteps', 'Fmag');
 toc % end timer
