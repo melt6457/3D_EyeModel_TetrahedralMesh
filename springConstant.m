@@ -9,6 +9,7 @@
 function springConstant()
 
 tic % startTime
+
 % Load in correct data
 clear % clear previous data
 load('meshInit.mat');
@@ -82,7 +83,6 @@ for i = 1:numEdges
         Vol = abs((1/6)*v1*cross(v2,v3)');
         
         % Find the spring constant value for this tetrahedron
-        %(E3*Vol)/c^2;
         Knew = (E3*Vol)/c^2;
         % add the spring constant
         Ki = Ki + Knew;
@@ -94,5 +94,5 @@ for i = 1:numEdges
 end
 
 % save the values to tetrahedralMesh2.mat
-save('EdgeInit.mat', 'K', 'N', 'Points', 'fixedPoints', 'frontPoints');
+save('Data/EdgeInit.mat', 'K', 'N', 'Points', 'fixedPoints', 'frontPoints');
 toc % record endTime

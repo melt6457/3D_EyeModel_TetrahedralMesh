@@ -12,6 +12,7 @@ tic % record startTime
 m = 1; % steps through P
 b = 12; % used to create circle for eye
 step = 4; % used to control how many points there are
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Number of points for each step value
 % Step 1: 7,153 points
@@ -62,5 +63,5 @@ for i = 1:length (bIndex)
       end
 end
 
-save ('MeshInit.mat', 'DT', 'fixedPoints', 'frontPoints');
+save ('Data/MeshInit.mat', 'DT', 'fixedPoints', 'frontPoints'); % save info
 toc % record endtime
