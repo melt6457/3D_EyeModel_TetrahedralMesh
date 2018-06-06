@@ -38,7 +38,7 @@ DT = delaunayTriangulation (P (:,1),P (:,2),P (:,3));
 % determine which points are fixed
 % keep points who are farther away than cutoff and whose x coord is
 % greater than frontCutoff
-k = boundary(DT.Points);
+k = boundary(DT.Points,0);
 bIndex = unique(k);
 
 
