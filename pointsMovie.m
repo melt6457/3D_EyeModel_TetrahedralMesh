@@ -7,7 +7,7 @@
 
 function movietrial(P)
 % load P
-load('Positions.mat');
+load('Data/Positions.mat');
 
 Fmax = max(max(Fmag));
 Fmagp = Fmag/Fmax; % magnitude proportion

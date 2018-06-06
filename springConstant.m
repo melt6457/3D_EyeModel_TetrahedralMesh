@@ -12,7 +12,7 @@ tic % startTime
 
 % Load in correct data
 clear % clear previous data
-load('meshInit.mat');
+load('Data/MeshInit.mat');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Info Stored in meshInit.mat (from CreateTetrahedralMesh.m)
 %

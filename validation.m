@@ -1,13 +1,27 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% File:     run.m
+% File:     validation.m
 % Creators: Kory Melton and Ian Besse
 % Date:     
-% Purpose:  To move the system of nodes using a 4th-order runge-kutta
-%           method.
+% Purpose:  To validate the model using corneal apex displacement
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function run
-tic % start timer
+clear;
+
+dt = 0.1;
+time = 30;
+
+disp(1,:) = validate(5, time, dt);
+disp(2,:) = validate(10, time, dt);
+disp(3,:) = validate(15, time, dt);
+disp(4,:) = validate(20, time, dt);
+disp(5,:) = validate(25, time, dt);
+
+times(:) = 0:dt:time;
+
+plot(times, disp(1,:), times, disp(2,:), times, disp(3,:), ...
+     times, disp(4,:), times, disp(5,:))
+
+function disp = validate(Force, time, dt)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Loading Data Into Workspace...
@@ -23,12 +37,10 @@ tic % start timer
 %       Points - 
 %       
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-clear % Clear previous data
 load('Data/MeshInit.mat'); % Contains DT values
 load('Data/EdgeInit.mat'); % Contains K, N, Points
 
-dt = .1; % set time-step to .1 millisecond
-time = 20; % set time to milliseconds
+tic % start timer
 
 NZK = sum(sum(K~=0));
 TK = sum(sum(K));
@@ -60,7 +72,6 @@ PS(:, :) = P(:, 1, :);
 VS = 0*PS;
 
 % set initial force
-Force = 7.5; % in Newtons
 F_0 = Force / 1000;
 impactTime = 0.2;
 V_0 = (F_0*impactTime)/(numFront*m);
@@ -74,9 +85,9 @@ rungeKutta_Vel = zeros (numPoints, 3, 4);
 rungeKutta_Acc = zeros (numPoints, 3, 4);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Iterate for the length of the simulation (1 to (final time index - 1))
+% Iterate for the length of the simulation (1 to final time index)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-for i = 1:(numSteps - 1) 
+for i = 1:(numSteps) 
     % get the current Position-State
     PS(:, :) = P(:, i, :);
     
@@ -88,7 +99,7 @@ for i = 1:(numSteps - 1)
     % Iterate for runge-kutta steps
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     for j = 1:4      
-        % get the vectors of the current nodes
+        % get the vectors of the current edges
         for n = 1:numEdges
             nodes(:) = Edges(n,:);
             D(nodes(1), nodes(2), :) = rungeKutta_Pos(nodes(2), :, j) - ...
@@ -152,16 +163,19 @@ for i = 1:(numSteps - 1)
     
     % Update New Positions
     P(:, i+1, :) = PS;
-    
-    if 0 == mod(i,print)
-        %print(i)
-        toc
-    end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Complete iteration for length of simulation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Save Positions to a File
-save('Data/Positions.mat', 'P', 'numSteps', 'Fmag');
+% get vectors to determine the distance from the initial position to the
+% new position at each time step for point 1
+distX (:) = P(1,1,1) - P(1,:,1);
+distY (:) = P(1,1,2) - P(1,:,2);
+distZ (:) = P(1,1,3) - P(1,:,3);
+
+disp (:) = sqrt(distX(:).^2 + distY(:).^2 + distZ(:).^2);
+
 toc % end timer
+
+end
