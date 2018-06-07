@@ -8,7 +8,10 @@
 clear;
 
 dt = 0.1;
-time = 30;
+time = 5;
+
+CreateTetrahedralMesh;
+springConstant;
 
 disp(1,:) = validate(5, time, dt);
 disp(2,:) = validate(10, time, dt);
@@ -170,9 +173,10 @@ end
 
 % get vectors to determine the distance from the initial position to the
 % new position at each time step for point 1
-distX (:) = P(1,1,1) - P(1,:,1);
-distY (:) = P(1,1,2) - P(1,:,2);
-distZ (:) = P(1,1,3) - P(1,:,3);
+cornealApexNode = 995;
+distX (:) = P(cornealApexNode,1,1) - P(cornealApexNode,:,1);
+distY (:) = P(cornealApexNode,1,2) - P(cornealApexNode,:,2);
+distZ (:) = P(cornealApexNode,1,3) - P(cornealApexNode,:,3);
 
 disp (:) = sqrt(distX(:).^2 + distY(:).^2 + distZ(:).^2);
 
