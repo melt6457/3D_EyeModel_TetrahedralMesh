@@ -46,8 +46,6 @@ eyeMass = .0075;
 m = eyeMass / numPoints; % set mass
 c = 0.2 * sqrt(Kavg * m); % Estimate for damping coefficient
 
-ff = [ones(numFront, 1), zeros(numFront, 2)]; % front force
-
 Fmag = zeros(numPoints, numSteps); % used to store forces
 
 % initialize P
@@ -60,13 +58,18 @@ PS(:, :) = P(:, 1, :);
 VS = 0*PS;
 
 % set initial force
+theta = 30;
+[InitVeloPoints, v_direction] = ImpactInitializer(theta);
 Force = 7.5; % in Newtons
 F_0 = Force / 1000;
 impactTime = 0.2;
-V_0 = (F_0*impactTime)/(numFront*m);
+[numInitPoints, ~] = size (InitVeloPoints);
 
-VS(frontPoints, :) = V_0*ff;
-%VS (frontPoints, :) = 5*ff;
+V_0 = (F_0*impactTime)/(numInitPoints*m);
+forces = [ones(numInitPoints, 3)]; % init forces
+forces = forces.*v_direction;
+
+VS(InitVeloPoints, :) = V_0*forces;
 
 % initialize runge-kutta matrices
 rungeKutta_Pos = zeros (numPoints, 3, 4);
@@ -108,7 +111,8 @@ for i = 1:(numSteps - 1)
         F2 = -F_m.*D(:,:,2); % get the force vector in the y
         F3 = -F_m.*D(:,:,3); % get the force vector in the z
         
-        % should this be absolute value? -- I don't think so
+        
+        
         Fx = (sum(F1'))'; % get the sum of the forces in x
         Fy = (sum(F2'))'; % get the sum of the forces in y
         Fz = (sum(F3'))'; % get the sum of the forces in z
@@ -165,3 +169,5 @@ end
 % Save Positions to a File
 save('Data/Positions.mat', 'P', 'numSteps', 'Fmag');
 toc % end timer
+
+end

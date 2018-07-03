@@ -75,12 +75,17 @@ PS(:, :) = P(:, 1, :);
 VS = 0*PS;
 
 % set initial force
+theta = 0;
+[InitVeloPoints, v_direction] = ImpactInitializer(theta);
 F_0 = Force / 1000;
 impactTime = 0.2;
-V_0 = (F_0*impactTime)/(numFront*m);
+[numInitPoints, ~] = size (InitVeloPoints);
 
-VS(frontPoints, :) = V_0*ff;
-%VS (frontPoints, :) = 5*ff;
+V_0 = (F_0*impactTime)/(numInitPoints*m);
+forces = [ones(numInitPoints, 3)]; % init forces
+forces = forces.*v_direction;
+
+VS(InitVeloPoints, :) = V_0*forces;
 
 % initialize runge-kutta matrices
 rungeKutta_Pos = zeros (numPoints, 3, 4);
