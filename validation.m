@@ -10,7 +10,7 @@ clear;
 dt = 0.1;
 time = 5;
 
-CreateTetrahedralMesh;
+oldCreateTetrahedralMesh;
 springConstant;
 
 disp(1,:) = validate(5, time, dt);
