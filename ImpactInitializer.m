@@ -36,7 +36,7 @@ P = M(k,:);
 
 %Dist is a vector of distances between all the points in M and the point of
 %M that is nearest the impact.
-Dist = sum((M(:,1:3) - P(:,1:3)).^2,2);
+Dist = sqrt(sum((M(:,1:3) - P(:,1:3)).^2,2));
 
 %ImpactZone is an r-by-4 matrix in which each of the r rows gives the
 %coordinates of the points in the vicinity of the impact concatenated with

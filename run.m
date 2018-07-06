@@ -58,7 +58,7 @@ PS(:, :) = P(:, 1, :);
 VS = 0*PS;
 
 % set initial force
-theta = 30;
+theta = 0;
 [InitVeloPoints, v_direction] = ImpactInitializer(theta);
 Force = 7.5; % in Newtons
 F_0 = Force / 1000;
