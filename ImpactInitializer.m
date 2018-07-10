@@ -41,7 +41,7 @@ Dist = sqrt(sum((M(:,1:3) - P(:,1:3)).^2,2));
 %ImpactZone is an r-by-4 matrix in which each of the r rows gives the
 %coordinates of the points in the vicinity of the impact concatenated with
 %the index (from DT.Points) of that point.
-ImpactZone = M(Dist<=4,:);
+ImpactZone = M(Dist<=12,:);
 
 %Ind is a vector of the indices of the points in DT.Points that should
 %be given an initial velocity due to an impact along this angle theta.

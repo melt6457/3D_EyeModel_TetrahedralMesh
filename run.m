@@ -6,8 +6,7 @@
 %           method.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function run
-tic % start timer
+function disp = run(Force, time, dt)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Loading Data Into Workspace...
@@ -23,12 +22,10 @@ tic % start timer
 %       Points - 
 %       
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-clear % Clear previous data
 load('Data/MeshInit.mat'); % Contains DT values
 load('Data/EdgeInit.mat'); % Contains K, N, Points
 
-dt = .1; % set time-step to .1 millisecond
-time = 20; % set time to milliseconds
+tic % start timer
 
 NZK = sum(sum(K~=0));
 TK = sum(sum(K));
@@ -46,6 +43,8 @@ eyeMass = .0075;
 m = eyeMass / numPoints; % set mass
 c = 0.2 * sqrt(Kavg * m); % Estimate for damping coefficient
 
+ff = [ones(numFront, 1), zeros(numFront, 2)]; % front force
+
 Fmag = zeros(numPoints, numSteps); % used to store forces
 
 % initialize P
@@ -60,14 +59,13 @@ VS = 0*PS;
 % set initial force
 theta = 0;
 [InitVeloPoints, v_direction] = ImpactInitializer(theta);
-Force = 7.5; % in Newtons
 F_0 = Force / 1000;
 impactTime = 0.2;
 [numInitPoints, ~] = size (InitVeloPoints);
 
 V_0 = (F_0*impactTime)/(numInitPoints*m);
 forces = [ones(numInitPoints, 3)]; % init forces
-forces = forces.*v_direction;
+forces = forces.*v_direction/norm(v_direction);
 
 VS(InitVeloPoints, :) = V_0*forces;
 
@@ -77,9 +75,9 @@ rungeKutta_Vel = zeros (numPoints, 3, 4);
 rungeKutta_Acc = zeros (numPoints, 3, 4);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Iterate for the length of the simulation (1 to (final time index - 1))
+% Iterate for the length of the simulation (1 to final time index)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-for i = 1:(numSteps - 1) 
+for i = 1:(numSteps) 
     % get the current Position-State
     PS(:, :) = P(:, i, :);
     
@@ -91,7 +89,7 @@ for i = 1:(numSteps - 1)
     % Iterate for runge-kutta steps
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     for j = 1:4      
-        % get the vectors of the current nodes
+        % get the vectors of the current edges
         for n = 1:numEdges
             nodes(:) = Edges(n,:);
             D(nodes(1), nodes(2), :) = rungeKutta_Pos(nodes(2), :, j) - ...
@@ -111,8 +109,7 @@ for i = 1:(numSteps - 1)
         F2 = -F_m.*D(:,:,2); % get the force vector in the y
         F3 = -F_m.*D(:,:,3); % get the force vector in the z
         
-        
-        
+        % should this be absolute value? -- I don't think so
         Fx = (sum(F1'))'; % get the sum of the forces in x
         Fy = (sum(F2'))'; % get the sum of the forces in y
         Fz = (sum(F3'))'; % get the sum of the forces in z
@@ -156,18 +153,21 @@ for i = 1:(numSteps - 1)
     
     % Update New Positions
     P(:, i+1, :) = PS;
-    
-    if 0 == mod(i,print)
-        %print(i)
-        toc
-    end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Complete iteration for length of simulation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% get vectors to determine the distance from the initial position to the
+% new position at each time step for point 1
+distX (:) = P(caIndex,1,1) - P(caIndex,:,1);
+distY (:) = P(caIndex,1,2) - P(caIndex,:,2);
+distZ (:) = P(caIndex,1,3) - P(caIndex,:,3);
+
+disp (:) = sqrt(distX(:).^2 + distY(:).^2 + distZ(:).^2);
+
 % Save Positions to a File
-save('Data/Positions.mat', 'P', 'numSteps', 'Fmag');
+save('Data/Positions.mat', 'P', 'numSteps', 'Fmag', 'disp');
 toc % end timer
 
 end
